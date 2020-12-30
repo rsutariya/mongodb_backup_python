@@ -17,6 +17,6 @@ args = parser.parse_args()
 while 1:
     if (time.time() % (args.minutes*60) == 0):
         print("One minute passed, time to backup")
-        os.system("python3 testExecBackup.py")
+        os.system("python3 testExecBackup.py \"backup.mongo.test\" ")
     else:
         continue

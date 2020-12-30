@@ -2,7 +2,7 @@ import os
 import sys
 import time
 import boto3
-
+import argparse
 
 parser = argparse.ArgumentParser(description= "For backing up mongodb from ec2 to s3")
 
