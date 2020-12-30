@@ -3,6 +3,14 @@ import sys
 import time
 import boto3
 
+
+parser = argparse.ArgumentParser(description= "For backing up mongodb from ec2 to s3")
+
+parser.add_argument("--s3loc", metavar="s", type=str, help="Destination s3 bucket")
+
+args = parser.parse_args()
+
+
 interval_m = 1
 outputs_dir = '/home/ubuntu/test/'
 
@@ -37,7 +45,7 @@ print("I will backup your mongo db every {0} minutes".format(interval_m))
 run_backup()
 
 
-local_directory, bucket, destination = './test/', 'backup.mongo.test', 'Backup/'
+local_directory, bucket, destination = './test/', args.s3loc, 'Backup/'
 client = boto3.client('s3')
 # s3.upload_file(Bucket='backup.mongo.test',Key='Backup/',Filename='test/')
 for root, dirs, files in os.walk(local_directory):
