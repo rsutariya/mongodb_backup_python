@@ -13,7 +13,8 @@ username = "NA"
 password = "NA"
 
 def render_output_locations():
-  return outputs_dir
+    timestamp = str(time.time())
+    return outputs_dir + "/" + timestamp#+ time.strftime("%d-%m-%Y-%H:%M:%S")
 
 def run_backup():
   command = "mongodump"
@@ -25,9 +26,9 @@ def run_backup():
     command += " --username " + username
   if password != 'NA':
     command += " --password " + password
-
+  
   command += " --out " + render_output_locations()
-
+  
   os.system(command)
 
 print("mongo backup progress started")
@@ -35,13 +36,13 @@ print("I will backup your mongo db every {0} minutes".format(interval_m))
 
 run_backup()
 
+
 local_directory, bucket, destination = './test/', 'backup.mongo.test', 'Backup/'
 client = boto3.client('s3')
-
+# s3.upload_file(Bucket='backup.mongo.test',Key='Backup/',Filename='test/')
 for root, dirs, files in os.walk(local_directory):
 
   for filename in files:
-
 
     local_path = os.path.join(root, filename)
 
@@ -49,12 +50,14 @@ for root, dirs, files in os.walk(local_directory):
     s3_path = os.path.join(destination, relative_path)
 
 
-    print 'Searching "%s" in "%s"' % (s3_path, bucket)
+    print ("Searching {0} in {1}".format(s3_path, bucket))
     try:
         client.head_object(Bucket=bucket, Key=s3_path)
-        print "Path found on S3! Skipping %s..." % s3_path
+        print ("Path found on S3! Skipping {}..." .format(s3_path))
 
     except:
-        print "Uploading %s..." % s3_path
+        print( "Uploading {}..." .format(s3_path))
         client.upload_file(local_path, bucket, s3_path)
+
+print("Done")
 
