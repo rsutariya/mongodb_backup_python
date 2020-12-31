@@ -3,6 +3,8 @@ import sys
 import time
 import boto3
 import argparse
+from datetime import datetime
+
 
 parser = argparse.ArgumentParser(description= "For backing up mongodb from ec2 to s3")
 
@@ -21,8 +23,9 @@ username = "NA"
 password = "NA"
 
 def render_output_locations():
-    timestamp = str(time.time())
-    return outputs_dir + "/" + timestamp#+ time.strftime("%d-%m-%Y-%H:%M:%S")
+    timestamp = time.time()
+    
+    return outputs_dir + "/" + str(datetime.fromtimestamp(timestamp))#+ time.strftime("%d-%m-%Y-%H:%M:%S")
 
 def run_backup():
   command = "mongodump"
