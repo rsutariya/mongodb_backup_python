@@ -1,3 +1,4 @@
+import time
 import os
 import sys
 import boto3
@@ -14,36 +15,50 @@ class Backup:
         self.dumper = MongoDump(port="27017", host="NA", username="NA", password="NA", outputDirectory="/home/ubuntu/test")
         self.foldersToUpload = []
 
-
+    def cleaner():
+        #task is to clean test after 24 hrs
+        pass
 
     def findFoldersToUpload(self):
+        self.foldersToUpload = []
         for root, dirs, files in os.walk(self.local_directory):
             for filename in files:
+                print(filename)
                 local_path = os.path.join(root, filename)
-
                 relative_path = os.path.relpath(local_path, self.local_directory)
-
-
                 s3_path = os.path.join(self.s3Path, relative_path)
 
-
                 try:
+                    print("In try block")
                     client.head_object(Bucket=self.s3Bucket, Key = s3_path)
             
 
                 except:
                     self.foldersToUpload.append((local_path, s3_path))
-        
+            print("Folders to upload are")
+            print(self.foldersToUpload)
 
-            return self.foldersToUpload
 
     def uploadToS3(self):
+            #self.dumper.takeDump()
+            fols = self.findFoldersToUpload()            
+            print(fols)
+            print("Going to upload")
             for val in self.foldersToUpload:
-                client.upload_file(val[0], self.s3Bucket, val[1])
+                print("Uploading {0} to s3".format(val))
+
+                self.client.upload_file(val[0], self.s3Bucket, val[1])
+
+    def scheduledUpload(self,interval = 1):
+        schedule.every(interval).hour.do(self.uploadToS3)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
 
 
 
 if __name__ == "__main__":
-    backup = Backup(local_directory="../test", s3Bucket="backup.mongo.test", s3Path="Backup/")    
-    backUpFolderList = backup.findFoldersToUpload()
+    backup = Backup(local_directory="/home/ubuntu/test", s3Bucket="backup.mongo.test", s3Path="Backup/")    
+    #backup.scheduledUpload()
     backup.uploadToS3()
+
