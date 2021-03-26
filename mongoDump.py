@@ -11,7 +11,7 @@ import schedule
 class MongoDump:
     def __init__(self,port, host, username, password, outputDirectory):
         self.port = port
-        
+        self.host = host        
         self.creds = {
                 "username" : username,
                 "password" : password
@@ -22,8 +22,8 @@ class MongoDump:
         self.command = ""
   
 
-    def takeDump():
-        self.command = "monogoDump"
+    def takeDump(self):
+        self.command = "mongodump "
         
         if self.host != "NA":
             self.command += "--host " + host
@@ -32,14 +32,14 @@ class MongoDump:
             self.command += "--port " + port
 
         if self.creds["username"] != "NA":
-            command += "--username" + creds["username"]
+            self.command += "--username" + creds["username"]
 
-        if self.creds["passwords"] != "NA":
-            command += "--password" + creds["password"]
+        if self.creds["password"] != "NA":
+            self.command += "--password" + creds["password"]
 
-        command += "--out" + self.outputLocation
+        self.command += "--out " + self.outputLocation
 
-        os.system(command)
+        os.system(self.command)
 
 
 
